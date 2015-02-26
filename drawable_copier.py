@@ -54,6 +54,8 @@ def main():
 FILE_TYPES = [".png", ".svg"]
 
 PROCEED_MSG = "\n\"y\" or \"yes\" to proceed. Anything else to cancel: "
+OVERWRITE_MSG = ("\n\"y\" or \"yes\" to overwrite these files."
+    " Anything else to cancel: ")
 CANCEL_MSG = "Nothing will be copied. Goodbye!"
 
 # Simplified UNIX file descriptor for a single depth directory.
@@ -207,10 +209,10 @@ def find_overwrites(src_descriptors, dst_descriptors):
 
 # Handles user interaction for overwriting duplicate files.    
 def handle_overwrites(overwrite_descriptors):
-    print "\n!!! Copy conflict(s) found!!! \nOverwrite the following file(s)?"
+    print "\n!!! Copy conflict(s) found!!!"
     print_descriptor_array(overwrite_descriptors)
 
-    cnfrm_input = raw_input(PROCEED_MSG).lower()
+    cnfrm_input = raw_input(OVERWRITE_MSG).lower()
     
     if cnfrm_input == "y" or cnfrm_input == "yes":
         print "Overwriting..."
