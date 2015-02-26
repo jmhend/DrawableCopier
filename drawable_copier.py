@@ -1,7 +1,6 @@
 import sys
 import os
 import shutil
-import glob
 import argparse
 
 # Do it.
