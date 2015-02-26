@@ -2,16 +2,15 @@ import sys
 import os
 import shutil
 import glob
+import argparse
 
 # Do it.
 def main(): 
+    opts = {"src":"", "dst":""}
+    do_argparse(opts)
 
-    if len(sys.argv) != 2:
-        print "usage: " + sys.argv[0] + " <destination directory>"
-        sys.exit(-1)
-
-    src = os.getcwd()
-    dst = sys.argv[1]
+    src = opts["src"]
+    dst = opts["dst"]
 
     if not validate_dirs(src, dst):
         sys.exit(-1)
@@ -23,7 +22,7 @@ def main():
 
     src_descriptors = build_descriptor_array(src, None, None)
     if count_files(src_descriptors) == 0:
-        print "No resources found to copy. Goodbye!"
+        print "No resources found in '" + src + "' to copy. Goodbye!"
         sys.exit()
 
     print "The following resources will be copied"
@@ -62,8 +61,28 @@ class DirDescriptor(object):
         self.name = name
         self.files = files
 
+# Sets up command line argparsing.
+def do_argparse(paths):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("src", 
+        help="The directory containing the source drawable-* subdirectories.",
+        nargs="?",
+        default=os.getcwd())
+    parser.add_argument("dst", 
+        help="The directory containing the destination drawable-* subdirectories.")
+    args = parser.parse_args()
+
+    paths["src"] = args.src
+    paths["dst"] = args.dst
+
 # Validates that the src and dst directories exist.
 def validate_dirs(src, dst):
+    if not os.path.exists(src):
+        print src + " does not exist!"
+        return False
+    if not os.path.exists(dst):
+        print dst + " does not exist!"
+        return False    
     return True
 
 # Checks if the file is a valid filetype.
