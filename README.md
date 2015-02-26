@@ -19,7 +19,7 @@ Example: If my Android Project is located at `/Users/jmhend/MyAndroidStudioProje
 
 All resource files in the `<source_res_directory>` will be copied. Read on to see how to limit which files are copied.
 
-The resource directories you supply as arguments must be the directories containing the `drawable-*` subdirectories. Also for now, each directory must be represented by a *full* directory path, i.e for example on Mac: `/Users/jmhend/MyAndroidStudioProject/app/src/main/res`, not `../.../main/res`
+The resource directories you supply as arguments must be the directories containing the `drawable-*` subdirectories. Also for now, each directory must be represented by a *full* directory path, i.e for example on Mac: `/Users/jmhend/MyAndroidStudioProject/app/src/main/res`, not `../../main/res`
 
 
 `<destination_res_directory>` is required.
