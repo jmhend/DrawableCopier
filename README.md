@@ -34,7 +34,7 @@ You can supply optional arguments to limit which files are copied with the `-f` 
 
 This will only copy `ic_menu.png` and `ic_action_new.png` from the source directories. This is especially useful when copying files from the Material Design Icons set.
 
-The script also supports some basic file matching, using the `--filematch` optional argument:
+The script also supports some basic filename matching, using the `--filematch` optional argument:
 
 `>>> python drawable_copier.py <source_res_directory> <destination_res_directory> -f ic_action --filematch`
 
@@ -42,6 +42,7 @@ This will copy all resources in the source directories containing the substring 
 
 
 For more usage help, see:
+
 `>>> python drawable_copier.py --help`
 
 ## Disclaimer
