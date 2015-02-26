@@ -5,11 +5,13 @@ import argparse
 
 # Do it.
 def main(): 
-    opts = {"src":"", "dst":""}
+    opts = {"src":"", "dst":"","files":[],"filematch":False}
     do_argparse(opts)
 
     src = opts["src"]
     dst = opts["dst"]
+    filenames = opts["files"]
+    filematch = opts["filematch"]
 
     if not validate_dirs(src, dst):
         sys.exit(-1)
@@ -19,7 +21,7 @@ def main():
             "your source directory!")
         sys.exit(-1)
 
-    src_descriptors = build_descriptor_array(src, None, None)
+    src_descriptors = build_descriptor_array(src, None, filenames, filematch)
     if count_files(src_descriptors) == 0:
         print "No resources found in '" + src + "' to copy. Goodbye!"
         sys.exit()
@@ -34,7 +36,7 @@ def main():
         print CANCEL_MSG
         sys.exit()
 
-    dst_descriptors = build_descriptor_array(dst, None, None)
+    dst_descriptors = build_descriptor_array(dst, None, filenames, filematch)
 
     overwrite_descriptors = find_overwrites(src_descriptors, dst_descriptors)
     if len(overwrite_descriptors) > 0:
@@ -61,7 +63,7 @@ class DirDescriptor(object):
         self.files = files
 
 # Sets up command line argparsing.
-def do_argparse(paths):
+def do_argparse(opts):
     parser = argparse.ArgumentParser()
     parser.add_argument("src", 
         help="The directory containing the source drawable-* subdirectories.",
@@ -69,10 +71,20 @@ def do_argparse(paths):
         default=os.getcwd())
     parser.add_argument("dst", 
         help="The directory containing the destination drawable-* subdirectories.")
+    parser.add_argument("-f", "--files",
+        nargs="+",
+        help="Will copy only the listed files (if they exist).")
+    parser.add_argument("--filematch",
+        action="store_true",
+        default=False,
+        help=("Will find any file that has a provided filename (with -f)"
+            " as a substring"))
     args = parser.parse_args()
 
-    paths["src"] = args.src
-    paths["dst"] = args.dst
+    opts["src"] = args.src
+    opts["dst"] = args.dst
+    opts["files"] = args.files
+    opts["filematch"] = args.filematch
 
 # Validates that the src and dst directories exist.
 def validate_dirs(src, dst):
@@ -96,9 +108,11 @@ def is_drawable_dir(directory):
     return directory is not None and directory.startswith("drawable")
 
 # Checks that the string is in the collection
-def in_set(str, set):
+def in_set(s, set, partial_match=False):
     for candidate in set:
-        if str == candidate:
+        if candidate == s:
+            return True
+        elif partial_match and candidate in s:
             return True
     return False
 
@@ -114,28 +128,32 @@ def match_descriptor(src_desc, dst_dir_descriptors):
 #               directories are included.
 # filenames: The list of filenames to include. If None, all filenames of valid 
 #            filetype included.
-def build_descriptor_array(dir, allowed_subdirs, allowed_filenames):
+def build_descriptor_array(dir_root, allowed_subdirs, 
+    allowed_filenames, filematch=False):
     descriptors = []
 
     restrict_subdirs = allowed_subdirs is not None
     restrict_filenames = allowed_filenames is not None
 
-    for root, subdirs, files in os.walk(dir):
-        for subdir in subdirs:
-            if not is_drawable_dir(subdir):
+    for item in os.listdir(dir_root):
+        dir_path = os.path.join(dir_root, item)
+        if os.path.isdir(dir_path):
+            if not is_drawable_dir(item):
                 continue
-            if restrict_subdirs and not in_set(subdir, allowed_subdirs):
+            if restrict_subdirs and not in_set(item, allowed_subdirs):
                 continue
 
             files_to_copy = []
 
-            for s_root, s_subdirs, s_files in os.walk(os.path.join(root, subdir)):
-                for s_file in s_files:
-                    if is_valid_type(s_file):
-                        if restrict_filenames and not in_set(s_file, allowed_filenames):
+            for s_item in os.listdir(dir_path):
+                file_path = os.path.join(dir_path, s_item)
+                if os.path.isfile(file_path):
+                    if is_valid_type(s_item):
+                        if restrict_filenames and not in_set(s_item, 
+                            allowed_filenames, filematch):
                             continue;
-                        files_to_copy.append(s_file)
-                descriptors.append(DirDescriptor(subdir, files_to_copy))
+                        files_to_copy.append(s_item)
+            descriptors.append(DirDescriptor(item, files_to_copy))
                 
     return descriptors
 
