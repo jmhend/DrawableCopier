@@ -46,4 +46,4 @@ For more usage help, see:
 
 ## Disclaimer
 
-This script has only yet been lightly tested. Shoot me a note or fork if you find any bugs. Cheers!
+This script has only yet been lightly tested (and only on OSX). Shoot me a note or fork if you find any bugs. Cheers!
