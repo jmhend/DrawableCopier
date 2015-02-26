@@ -14,8 +14,7 @@ Open up your favorite terminal. The script will provide you with confirmation me
 
 Example: If my Android Project is located at `/Users/jmhend/MyAndroidStudioProject` and the directory containing the resources I want to copy is at `/Users/jmhend/Desktop/material-design-icons-1.0.1/action`, the command will be:
 
-`>>> python drawable_copier.py /Users/jmhend/MyAndroidStudioProject/app/src/main/res /Users/jmhend/Desktop/material-design-icons-1.0.1/action`
-
+`>>> python drawable_copier.py /Users/jmhend/Desktop/material-design-icons-1.0.1/action /Users/jmhend/MyAndroidStudioProject/app/src/main/res`
 
 
 All resource files in the `<source_res_directory>` will be copied. Read on to see how to limit which files are copied.
