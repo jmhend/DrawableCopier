@@ -39,3 +39,11 @@ The script also supports some basic file matching, using the `--filematch` optio
 `>>> python drawable_copier.py <source_res_directory> <destination_res_directory> -f ic_action --filematch`
 
 This will copy all resources in the source directories containing the substring "ic_action". I.e, if there is `ic_action_new.png` and `ic_action_remove.png`, both will be copied. Again, you'll see a confirmation list of resources that will be copied before any copy action is made.
+
+
+For more usage help, see:
+`>>> python drawable_copier.py --help`
+
+## Disclaimer
+
+This script has only yet been lightly tested. Shoot me a note or fork if you find any bugs. Cheers!
