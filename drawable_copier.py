@@ -3,15 +3,20 @@ import os
 import shutil
 import argparse
 
+verbose = False
+
 # Do it.
 def main(): 
-    opts = {"src":"", "dst":"","files":[],"filematch":False}
+    opts = {"src":"", "dst":"","files":[],"filematch":False,"verbose":False}
     do_argparse(opts)
 
     src = opts["src"]
     dst = opts["dst"]
     filenames = opts["files"]
     filematch = opts["filematch"]
+
+    global verbose
+    verbose = opts["verbose"]
 
     if not validate_dirs(src, dst):
         sys.exit(-1)
@@ -47,9 +52,6 @@ def main():
     print "Success! " + str(total_copied) + " files copied."
 
 
-################################################################################
-
-
 # Filetypes acknowledged by this script.
 FILE_TYPES = [".png", ".svg"]
 
@@ -81,12 +83,17 @@ def do_argparse(opts):
         default=False,
         help=("Will find any file that has a provided filename (with -f)"
             " as a substring"))
+    parser.add_argument("--verbose",
+        action="store_true",
+        default=False,
+        help="Prints extra details as the script runs.")
     args = parser.parse_args()
 
     opts["src"] = args.src
     opts["dst"] = args.dst
     opts["files"] = args.files
     opts["filematch"] = args.filematch
+    opts["verbose"] = args.verbose
 
 # Validates that the src and dst directories exist.
 def validate_dirs(src, dst):
@@ -235,12 +242,12 @@ def copy_files_by_subdir(src_root, src_descriptor, dst_root, dst_descriptor):
         src_filename = os.path.join(src_prefix, src_file)    
         dst_filename = os.path.join(dst_prefix, src_file)
 
-        #if in_set(src_file, dst_descriptor.files):
-            #print "Warning: Overwriting " + src_file
-
-        #print "--- Copy [" + src_filename + "\t" + dst_filename +"]"
         shutil.copyfile(src_filename, dst_filename)
         copied_count += 1
+
+        if (verbose):
+            print "Copying " + src_descriptor.name + "/" + src_file + "..."
+
 
     return copied_count
         
@@ -252,7 +259,9 @@ def do_mkdirs(dir_root, dir_name):
     if os.path.exists(dir_path):
         raise Exception(dir_path + " already exists!")
 
-    print "mkdirs: " + dir_path
+    if (verbose):
+        print "mkdirs: " + dir_path
+
     os.makedirs(dir_path)
 
     return DirDescriptor(dir_name, [])
@@ -265,8 +274,8 @@ def copy_files(src_root, src_descriptors, dst_root, dst_descriptors, mkdirs):
     for src_descriptor in src_descriptors:
         dst_descriptor = match_descriptor(src_descriptor, dst_descriptors);
 
-        # Dst dir doesn't exist.
-        if dst_descriptor is None and mkdirs:
+        # Dst dir doesn't exist. Only create if there are files to copy.
+        if dst_descriptor is None and mkdirs and len(src_descriptor.files) > 0:
             dst_descriptor = do_mkdirs(dst_root, src_descriptor.name)
 
         if dst_descriptor is not None:
