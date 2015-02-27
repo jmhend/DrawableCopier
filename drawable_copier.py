@@ -246,7 +246,7 @@ def copy_files_by_subdir(src_root, src_descriptor, dst_root, dst_descriptor):
         copied_count += 1
 
         if (verbose):
-            print "Copying " + src_descriptor.name + "/" + src_file + "..."
+            print "Copying " + os.path.join(src_descriptor.name, src_file) + "..."
 
 
     return copied_count
